@@ -1,12 +1,17 @@
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 
-namespace IrcBotDotNet
+using IrcDotNet;
+using IrcDotNet.Bot;
+
+namespace IrcDotNet.Bot
 {
 	public abstract class IrcBotPlugin<T> where T : IrcClient
 	{
 		List<PreCommandTrigger<T>> PreCommands { get; set; }
 		List<CommandTrigger<T>>    Commands    { get; set; }
-		List<JoinTrigger<T>>       Joins       { get; set; }
+		List<UserJoinTrigger<T>>   UserJoins   { get; set; }
 
 		public string DefaultPrefix { get; set; }
 
@@ -17,7 +22,7 @@ namespace IrcBotDotNet
 		{
 			PreCommands = new List<PreCommandTrigger<T>>();
 			Commands    = new List<CommandTrigger<T>>();
-			Joins       = new List<JoinTrigger<T>>();
+			UserJoins   = new List<UserJoinTrigger<T>>();
 		}
 
 		internal void Register()
@@ -32,9 +37,9 @@ namespace IrcBotDotNet
 						} else if (member is PropertyInfo) {
 							Commands.Add(new PropertyCommandTrigger<T>(this, attribute as OnCommandAttribute, member as PropertyInfo));
 						}
-					} else if (attribute is OnJoinAttribute) {
+					} else if (attribute is OnUserJoinAttribute) {
 						if (member is MethodInfo) {
-							Joins.Add(new JoinTrigger<T>(this, member as MethodInfo));
+							UserJoins.Add(new UserJoinTrigger<T>(this, member as MethodInfo));
 						}
 					} else if (attribute is PreCommandAttribute) {
 						if (member is MethodInfo) {
@@ -89,7 +94,7 @@ namespace IrcBotDotNet
 
 		internal void HandleUserJoined(object sender, IrcChannelUserEventArgs e)
 		{
-			Joins.ForEach((join) => join.Handle(e));
+			UserJoins.ForEach((join) => join.Handle(e));
 		}
 	}
 }

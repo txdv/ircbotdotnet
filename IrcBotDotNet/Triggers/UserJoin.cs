@@ -6,11 +6,25 @@ using IrcDotNet.Bot.Extensions;
 
 namespace IrcDotNet.Bot
 {
-	class JoinTrigger<T> : Trigger<T> where T : IrcClient
+	public class OnUserJoinAttribute : IrcBotAttribute
+	{
+		public OnUserJoinAttribute()
+		{
+		}
+		
+		public OnUserJoinAttribute(string channel)
+		{
+			Channel = channel;
+		}
+		
+		public string Channel { get; set; }
+	}
+
+	class UserJoinTrigger<T> : Trigger<T> where T : IrcClient
 	{
 		MethodInfo Method { get; set; }
 
-		public JoinTrigger(IrcBotPlugin<T> plugin, MethodInfo method)
+		public UserJoinTrigger(IrcBotPlugin<T> plugin, MethodInfo method)
 			: base(plugin)
 		{
 			Method = method;

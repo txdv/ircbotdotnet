@@ -90,20 +90,6 @@ namespace IrcDotNet.Bot
 		public bool DefaultValue { get; set; }
 	}
 
-	public class OnJoinAttribute : IrcBotAttribute
-	{
-		public OnJoinAttribute()
-		{
-		}
-
-		public OnJoinAttribute(string channel)
-		{
-			Channel = channel;
-		}
-
-		public string Channel { get; set; }
-	}
-
 	public class OnPartAttribute : IrcBotAttribute
 	{
 		public OnPartAttribute()
