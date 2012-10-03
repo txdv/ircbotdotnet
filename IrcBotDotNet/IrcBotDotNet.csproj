@@ -43,6 +43,7 @@
     <Compile Include="Triggers\Command.cs" />
     <Compile Include="Triggers\Join.cs" />
     <Compile Include="Triggers\Trigger.cs" />
+    <Compile Include="IrcBotPlugin.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
