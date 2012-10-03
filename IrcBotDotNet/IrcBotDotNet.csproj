@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{3DBD415E-3EEE-4DE1-9A1B-E6FC0A269011}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>IrcBotDotNet</RootNamespace>
+    <RootNamespace>IrcDotNet.Bot</RootNamespace>
     <AssemblyName>IrcBotDotNet</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
