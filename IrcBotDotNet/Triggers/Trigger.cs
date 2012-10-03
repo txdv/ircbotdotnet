@@ -140,50 +140,15 @@ namespace IrcDotNet.Bot
 				return null;
 			}
 		}
-			/*
-		protected object Process(ParameterInfo info, EventArgs args)
-		{
-			if (info.ParameterType == typeof(IrcEventArgs)) {
-				return args;
-			} else {
-				return Process(info, args.Data);
-			}
-		}
 
-		protected object Process(ParameterInfo info, IrcMessageData data)
+		protected object Process(ParameterInfo info, IrcChannelUserEventArgs args)
 		{
-			if (info.ParameterType == typeof(IrcMessageData)) {
-				return data;
-			} else if (info.ParameterType == typeof(ReplyCode)) {
-				return data.Type;
-			} else if (info.ParameterType == typeof(Channel)) {
-				return Plugin.Bot.GetChannel(data.Channel);
+			if (info.ParameterType == typeof(IrcChannelUserEventArgs)) {
+				return args;
 			} else if (info.ParameterType == typeof(string)) {
-				string name = info.Name.ToLower();
-				switch (name) {
+				switch (info.Name.ToLower()) {
 				case "channel":
-				case "chan":
-					return data.Channel;
-				case "nickname":
-				case "nick":
-				case "name":
-					return data.Nick;
-				case "target":
-					return data.Channel ?? data.Nick;
-				case "from":
-					return data.From;
-				case "host":
-					return data.Host;
-				case "ident":
-				case "id":
-					return data.Ident;
-				case "message":
-				case "msg":
-					return data.Message;
-				case "rawmessage":
-				case "rawmsg":
-				case "raw":
-					return data.RawMessage;
+					return args.ChannelUser.Channel.Name;
 				default:
 					return null;
 				}
@@ -191,26 +156,6 @@ namespace IrcDotNet.Bot
 				return null;
 			}
 		}
-
-		protected object Process(ParameterInfo info, JoinEventArgs args)
-		{
-			if (info.ParameterType == typeof(JoinEventArgs)) {
-				return args;
-			} else if (info.ParameterType == typeof(string)) {
-				string name = info.Name.ToLower();
-				switch (name) {
-				case "who":
-				case "nick":
-					return args.Who;
-				case "channel":
-				default:
-					return args.Channel;
-				}
-			} else {
-				return Process(info, args.Data);
-			}
-		}
-		*/
 
 		protected object[] GetValues(ParameterInfo[] parameters, Func<ParameterInfo, object> callback)
 		{

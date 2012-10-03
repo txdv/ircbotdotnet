@@ -13,6 +13,7 @@ namespace IrcDotNet.Bot
 	{
 		List<PreCommandTrigger<T>> PreCommands { get; set; }
 		List<CommandTrigger<T>>    Commands    { get; set; }
+		List<JoinTrigger<T>>       Joins       { get; set; }
 
 		public string DefaultPrefix { get; set; }
 
@@ -21,7 +22,9 @@ namespace IrcDotNet.Bot
 
 		public IrcBotPlugin()
 		{
-			Commands = new List<CommandTrigger<T>>();
+			PreCommands = new List<PreCommandTrigger<T>>();
+			Commands    = new List<CommandTrigger<T>>();
+			Joins       = new List<JoinTrigger<T>>();
 		}
 
 		internal void Register()
@@ -36,12 +39,10 @@ namespace IrcDotNet.Bot
 						} else if (member is PropertyInfo) {
 							Commands.Add(new PropertyCommandTrigger<T>(this, attribute as OnCommandAttribute, member as PropertyInfo));
 						}
-						/*
 					} else if (attribute is OnJoinAttribute) {
 						if (member is MethodInfo) {
-							Joins.Add(new JoinTrigger(this, member as MethodInfo));
+							Joins.Add(new JoinTrigger<T>(this, member as MethodInfo));
 						}
-						*/
 					} else if (attribute is PreCommandAttribute) {
 						if (member is MethodInfo) {
 							PreCommands.Add(new MethodPreCommandTrigger<T>(this, attribute as PreCommandAttribute, member as MethodInfo));
@@ -49,6 +50,15 @@ namespace IrcDotNet.Bot
 							PreCommands.Add(new PropertyPreCommandTrigger<T>(this, attribute as PreCommandAttribute, member as PropertyInfo));
 						}
 					}
+				}
+			}
+		}
+
+		void ExecuteCommands(MessageType type, IrcMessageEventArgs args)
+		{
+			foreach (var command in Commands) {
+				if (command.Handle(type, args)) {
+					return;
 				}
 			}
 		}
@@ -84,13 +94,9 @@ namespace IrcDotNet.Bot
 			}
 		}
 
-		void ExecuteCommands(MessageType type, IrcMessageEventArgs args)
+		internal void HandleUserJoined(object sender, IrcChannelUserEventArgs e)
 		{
-			foreach (var command in Commands) {
-				if (command.Handle(type, args)) {
-					return;
-				}
-			}
+			Joins.ForEach((join) => join.Handle(e));
 		}
 	}
 
@@ -106,21 +112,37 @@ namespace IrcDotNet.Bot
 			DefaultPrefix = "!";
 			Client = client;
 
-
 			Client.Connected += HandleConnected;
 		}
 
 		void HandleConnected(object sender, EventArgs e)
 		{
 			Client.LocalUser.MessageReceived += HandleMessageReceived;
+			Client.LocalUser.JoinedChannel += HandleJoinedChannel;
+			Client.LocalUser.LeftChannel += HandleLeftChannel;
 		}
 
-		protected virtual void HandleMessageReceived(object sender, IrcMessageEventArgs e)
+		void HandleJoinedChannel(object sender, IrcChannelEventArgs e)
+		{
+			e.Channel.UserJoined += HandleUserJoined;
+		}
+
+		void HandleLeftChannel(object sender, IrcChannelEventArgs e)
+		{
+			e.Channel.UserJoined -= HandleUserJoined;
+		}
+
+		void HandleUserJoined(object sender, IrcChannelUserEventArgs e)
+		{
+			Each((plugin) => plugin.HandleUserJoined(sender, e));
+		}
+
+		void HandleMessageReceived(object sender, IrcMessageEventArgs e)
 		{
 			Each((plugin) => plugin.HandleMessageReceived(sender, e));
 		}
 
-		private void Each(Action<IrcBotPlugin<T>> callback)
+		void Each(Action<IrcBotPlugin<T>> callback)
 		{
 			foreach (var plugin in plugins) {
 				callback(plugin);

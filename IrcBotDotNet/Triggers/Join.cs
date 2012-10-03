@@ -6,18 +6,17 @@ using IrcDotNet.Bot.Extensions;
 
 namespace IrcDotNet.Bot
 {
-	/*
-	class JoinTrigger : Trigger
+	class JoinTrigger<T> : Trigger<T> where T : IrcClient
 	{
 		MethodInfo Method { get; set; }
 
-		public JoinTrigger(IrcBotPlugin plugin, MethodInfo method)
+		public JoinTrigger(IrcBotPlugin<T> plugin, MethodInfo method)
 			: base(plugin)
 		{
 			Method = method;
 		}
 
-		public bool Handle(JoinEventArgs args)
+		public bool Handle(IrcChannelUserEventArgs args)
 		{
 			Invoke(Method, GetValues(Method.GetParameters(), (info) => {
 				return Process(info, args);
@@ -25,6 +24,5 @@ namespace IrcDotNet.Bot
 			return true;
 		}
 	}
-	*/
 }
 
