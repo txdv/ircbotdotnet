@@ -3,24 +3,25 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Manos.IO;
-using Meebey.SmartIrc4net;
 
-using SmartIrcBot4net.Extensions;
+using IrcDotNet;
+using IrcDotNet.Bot.Extensions;
 
-namespace SmartIrcBot4net
+namespace IrcDotNet.Bot
 {
-	public abstract class IrcBotPlugin
+	public abstract class IrcBotPlugin<T> where T : IrcClient
 	{
-		internal List<PreCommandTrigger> PreCommands { get; set; }
-		internal List<CommandTrigger>		 Commands		 { get; set; }
-		internal List<JoinTrigger>			 Joins			 { get; set; }
+		List<PreCommandTrigger<T>> PreCommands { get; set; }
+		List<CommandTrigger<T>>    Commands    { get; set; }
+
+		public string DefaultPrefix { get; set; }
+
+		public IrcBot<T> Bot { get; internal set; }
+		public T Client { get; internal set; }
 
 		public IrcBotPlugin()
 		{
-			Commands		= new List<CommandTrigger>();
-			Joins				= new List<JoinTrigger>();
-			PreCommands = new List<PreCommandTrigger>();
+			Commands = new List<CommandTrigger<T>>();
 		}
 
 		internal void Register()
@@ -31,33 +32,33 @@ namespace SmartIrcBot4net
 				foreach (object attribute in member.GetCustomAttributes(true)) {
 					if (attribute is OnCommandAttribute) {
 						if (member is MethodInfo) {
-							Commands.Add(new MethodCommandTrigger(this, attribute as OnCommandAttribute, member as MethodInfo));
+							Commands.Add(new MethodCommandTrigger<T>(this, attribute as OnCommandAttribute, member as MethodInfo));
 						} else if (member is PropertyInfo) {
-							Commands.Add(new PropertyCommandTrigger(this, attribute as OnCommandAttribute, member as PropertyInfo));
+							Commands.Add(new PropertyCommandTrigger<T>(this, attribute as OnCommandAttribute, member as PropertyInfo));
 						}
+						/*
 					} else if (attribute is OnJoinAttribute) {
 						if (member is MethodInfo) {
 							Joins.Add(new JoinTrigger(this, member as MethodInfo));
 						}
+						*/
 					} else if (attribute is PreCommandAttribute) {
 						if (member is MethodInfo) {
-							PreCommands.Add(new MethodPreCommandTrigger(this, attribute as PreCommandAttribute, member as MethodInfo));
+							PreCommands.Add(new MethodPreCommandTrigger<T>(this, attribute as PreCommandAttribute, member as MethodInfo));
 						} else if (member is PropertyInfo) {
-							PreCommands.Add(new PropertyPreCommandTrigger(this, attribute as PreCommandAttribute, member as PropertyInfo));
+							PreCommands.Add(new PropertyPreCommandTrigger<T>(this, attribute as PreCommandAttribute, member as PropertyInfo));
 						}
 					}
 				}
 			}
 		}
 
-		internal void HandleOnJoin(object sender, JoinEventArgs args)
+		internal void HandleMessageReceived(object sender, IrcMessageEventArgs e)
 		{
-			foreach (var join in Joins) {
-				join.Handle(args);
-			}
+			HandleMessageReceived(MessageType.Query, sender, e);
 		}
 
-		internal void HandleOnMessage(MessageType type, IrcEventArgs args)
+		void HandleMessageReceived(MessageType type, object sender, IrcMessageEventArgs args)
 		{
 			int count = 0;
 			bool allTrue = true;
@@ -83,7 +84,7 @@ namespace SmartIrcBot4net
 			}
 		}
 
-		void ExecuteCommands(MessageType type, IrcEventArgs args)
+		void ExecuteCommands(MessageType type, IrcMessageEventArgs args)
 		{
 			foreach (var command in Commands) {
 				if (command.Handle(type, args)) {
@@ -91,93 +92,69 @@ namespace SmartIrcBot4net
 				}
 			}
 		}
-
-		public IrcBot Bot { get; internal set; }
-		public Context Context {
-			get {
-				return Bot.Context;
-			}
-		}
-		public string DefaultPrefix { get; set; }
 	}
 
-	class ParameterHandler
+	public class IrcBot<T> where T : IrcClient
 	{
-		public ParameterHandler(object[] parameters)
-		{
-		}
-	}
+		private List<IrcBotPlugin<T>> plugins = new List<IrcBotPlugin<T>>();
 
-	public class IrcBot : IrcClient
-	{
+		public T Client { get; private set; }
 		public string DefaultPrefix { get; set; }
 
-		private List<IrcBotPlugin> plugins = new List<IrcBotPlugin>();
-
-		public IrcBot(Context context)
-			: base(context)
+		public IrcBot(T client)
 		{
 			DefaultPrefix = "!";
+			Client = client;
 
-			OnChannelMessage += HandleOnChannelMessage;
-			OnQueryMessage	 += HandleOnQueryMessage;
-			OnJoin += HandleOnJoin;
+
+			Client.Connected += HandleConnected;
 		}
 
-		void HandleOnJoin(object sender, JoinEventArgs e)
+		void HandleConnected(object sender, EventArgs e)
+		{
+			Client.LocalUser.MessageReceived += HandleMessageReceived;
+		}
+
+		protected virtual void HandleMessageReceived(object sender, IrcMessageEventArgs e)
+		{
+			Each((plugin) => plugin.HandleMessageReceived(sender, e));
+		}
+
+		private void Each(Action<IrcBotPlugin<T>> callback)
 		{
 			foreach (var plugin in plugins) {
-				plugin.HandleOnJoin(sender, e);
+				callback(plugin);
 			}
 		}
 
-		void HandleOnMessage(MessageType type, IrcEventArgs args)
+		public bool Plugin(IrcBotPlugin<T> plugin)
 		{
-			foreach (var plugin in plugins) {
-				plugin.HandleOnMessage(type, args);
-			}
-		}
-
-		void HandleOnQueryMessage(object sender, IrcEventArgs e)
-		{
-			HandleOnMessage(MessageType.Query, e);
-		}
-
-		void HandleOnChannelMessage(object sender, IrcEventArgs e)
-		{
-			HandleOnMessage(MessageType.Channel, e);
-		}
-
-		public bool Plugin(IrcBotPlugin plugin)
-		{
-			if (!(plugin is IrcBotPlugin)) {
+			if (!(plugin is IrcBotPlugin<T>)) {
 				return false;
 			}
 
 			plugin.Bot = this;
-
+			plugin.Client = Client;
 			plugin.Register();
-
 			plugins.Add(plugin);
-
 			return true;
 		}
 
 		public void Plugin(IEnumerable plugins)
 		{
 			foreach (var plugin in plugins) {
-				Plugin(plugin as IrcBotPlugin);
+				Plugin(plugin as IrcBotPlugin<T>);
 			}
 		}
 
 		public void LoadTryParse(Assembly assembly)
 		{
-			Trigger.Load(assembly);
+			Trigger<T>.Load(assembly);
 		}
 
 		public void LoadTryParse(Type type)
 		{
-			Trigger.Load(type);
+			Trigger<T>.Load(type);
 		}
 	}
 }

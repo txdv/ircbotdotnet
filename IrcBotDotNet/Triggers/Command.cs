@@ -3,32 +3,30 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-using SmartIrcBot4net.Extensions;
-using Meebey.SmartIrc4net;
+using IrcDotNet;
+using IrcDotNet.Bot.Extensions;
 
-using Manos.IO;
-
-namespace SmartIrcBot4net
+namespace IrcDotNet.Bot
 {
-	abstract class PreCommandTrigger : Trigger
+	abstract class PreCommandTrigger<T> : Trigger<T> where T : IrcClient
 	{
 		public PreCommandAttribute Attribute { get; set; }
 
-		public PreCommandTrigger(IrcBotPlugin plugin, PreCommandAttribute attribute)
+		public PreCommandTrigger(IrcBotPlugin<T> plugin, PreCommandAttribute attribute)
 			: base(plugin)
 		{
 			Attribute = attribute;
 		}
 
-		public abstract void Handle(MessageType type, IrcEventArgs args, Action<bool> callback);
+		public abstract void Handle(MessageType type, IrcMessageEventArgs args, Action<bool> callback);
 	}
 
-	class MethodPreCommandTrigger : PreCommandTrigger
+	class MethodPreCommandTrigger<T> : PreCommandTrigger<T> where T : IrcClient
 	{
 		MethodInfo Method { get; set; }
 		bool ReturnsBool { get; set; }
 
-		public MethodPreCommandTrigger(IrcBotPlugin plugin, PreCommandAttribute attribute, MethodInfo method)
+		public MethodPreCommandTrigger(IrcBotPlugin<T> plugin, PreCommandAttribute attribute, MethodInfo method)
 			: base(plugin, attribute)
 		{
 			Method = method;
@@ -39,7 +37,7 @@ namespace SmartIrcBot4net
 			}
 		}
 
-		public override void Handle(MessageType type, IrcEventArgs args, Action<bool> callback)
+		public override void Handle(MessageType type, IrcMessageEventArgs args, Action<bool> callback)
 		{
 			if (ReturnsBool) {
 				bool result = (bool)Invoke(Method, GetValues(Method.GetParameters(), (info) => {
@@ -61,6 +59,7 @@ namespace SmartIrcBot4net
 
 		Action<bool> TimeoutCall(TimeSpan span, Action<bool> callback, bool defaultValue = false)
 		{
+			/*
 			var timer = Context.CreateTimerWatcher(span, delegate {
 				callback(defaultValue);
 			});
@@ -74,21 +73,22 @@ namespace SmartIrcBot4net
 
 			timer.Start();
 
-			return ret;
+*/
+			return (res) => { };
 		}
 	}
 
-	class PropertyPreCommandTrigger : PreCommandTrigger
+	class PropertyPreCommandTrigger<T> : PreCommandTrigger<T> where T : IrcClient
 	{
 		PropertyInfo Property { get; set; }
 
-		public PropertyPreCommandTrigger(IrcBotPlugin plugin, PreCommandAttribute attribute, PropertyInfo property)
+		public PropertyPreCommandTrigger(IrcBotPlugin<T> plugin, PreCommandAttribute attribute, PropertyInfo property)
 			: base(plugin, attribute)
 		{
 			Property = property;
 		}
 
-		public override void Handle(MessageType type, IrcEventArgs args, Action<bool> callback)
+		public override void Handle(MessageType type, IrcMessageEventArgs args, Action<bool> callback)
 		{
 			if (Property.PropertyType == typeof(string)) {
 				string val = Property.GetValue(Plugin, null) as string;
@@ -106,7 +106,7 @@ namespace SmartIrcBot4net
 		}
 	}
 
-	abstract class CommandTrigger : Trigger
+	abstract class CommandTrigger<T> : Trigger<T> where T : IrcClient
 	{
 		public OnCommandAttribute Attribute { get; set; }
 
@@ -116,18 +116,17 @@ namespace SmartIrcBot4net
 			}
 		}
 
-		public CommandTrigger(IrcBotPlugin plugin, OnCommandAttribute attribute)
+		public CommandTrigger(IrcBotPlugin<T> plugin, OnCommandAttribute attribute)
 			: base(plugin)
 		{
 			Attribute = attribute;
 		}
 
-		public abstract bool Handle(MessageType type, IrcEventArgs args);
+		public abstract bool Handle(MessageType type, IrcMessageEventArgs args);
 
-		protected Match GetMatch(MessageType type, IrcEventArgs args)
+		protected Match GetMatch(MessageType type, IrcMessageEventArgs args)
 		{
-
-			string msg = args.Data.Message;
+			string msg = args.Text;
 
 			if (!msg.StartsWith(Prefix)) {
 				return null;
@@ -141,7 +140,7 @@ namespace SmartIrcBot4net
 				return null;
 			}
 
-			if (!args.Data.Message.StartsWith(Prefix)) {
+			if (!args.Text.StartsWith(Prefix)) {
 				return null;
 			}
 
@@ -153,18 +152,17 @@ namespace SmartIrcBot4net
 		}
 	}
 
-	class MethodCommandTrigger : CommandTrigger
+	class MethodCommandTrigger<T> : CommandTrigger<T> where T : IrcClient
 	{
-
 		public MethodInfo Method { get; set; }
 
-		public MethodCommandTrigger(IrcBotPlugin plugin, OnCommandAttribute attribute, MethodInfo method)
+		public MethodCommandTrigger(IrcBotPlugin<T> plugin, OnCommandAttribute attribute, MethodInfo method)
 			: base(plugin, attribute)
 		{
 			Method = method;
 		}
 
-		public override bool Handle(MessageType type, IrcEventArgs args)
+		public override bool Handle(MessageType type, IrcMessageEventArgs args)
 		{
 			var match = GetMatch(type, args);
 			if (match == null) {
@@ -177,15 +175,14 @@ namespace SmartIrcBot4net
 
 			return true;
 		}
-
 	}
 
-	class PropertyCommandTrigger : CommandTrigger
+	class PropertyCommandTrigger<T> : CommandTrigger<T> where T : IrcClient
 	{
 
-		public PropertyInfo Property	{ get; set; }
+		public PropertyInfo Property { get; set; }
 
-		public PropertyCommandTrigger(IrcBotPlugin plugin, OnCommandAttribute attribute, PropertyInfo property)
+		public PropertyCommandTrigger(IrcBotPlugin<T> plugin, OnCommandAttribute attribute, PropertyInfo property)
 			: base(plugin, attribute)
 		{
 			Property = property;
@@ -204,7 +201,7 @@ namespace SmartIrcBot4net
 			}
 		}
 
-		public override bool Handle(MessageType type, IrcEventArgs args)
+		public override bool Handle(MessageType type, IrcMessageEventArgs args)
 		{
 			var match = GetMatch(type, args);
 			if (match == null) {

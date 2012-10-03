@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace SmartIrcBot4net
+namespace IrcDotNet.Bot
 {
 	public enum MessageType {
 		All,

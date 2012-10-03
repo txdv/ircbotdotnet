@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace SmartIrcBot4net.Extensions
+namespace IrcDotNet.Bot.Extensions
 {
 	public static class HelperExtensions
 	{

@@ -1,11 +1,12 @@
 using System;
 using System.Reflection;
 
-using Meebey.SmartIrc4net;
+using IrcDotNet;
+using IrcDotNet.Bot.Extensions;
 
-namespace SmartIrcBot4net
+namespace IrcDotNet.Bot
 {
-
+	/*
 	class JoinTrigger : Trigger
 	{
 		MethodInfo Method { get; set; }
@@ -24,5 +25,6 @@ namespace SmartIrcBot4net
 			return true;
 		}
 	}
+	*/
 }
 

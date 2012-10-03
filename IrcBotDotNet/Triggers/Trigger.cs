@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 
-using Meebey.SmartIrc4net;
-using SmartIrcBot4net.Extensions;
+using IrcDotNet;
+using IrcDotNet.Bot.Extensions;
 
-using Manos.IO;
-
-namespace SmartIrcBot4net
+namespace IrcDotNet.Bot
 {
-	class Trigger
+	class Trigger<T> where T : IrcClient
 	{
 		private static Dictionary<Type, MethodInfo> tryParseMethods = new Dictionary<Type, MethodInfo>();
 
@@ -80,19 +80,68 @@ namespace SmartIrcBot4net
 			return null;
 		}
 
-		public IrcBotPlugin Plugin { get; protected set; }
-		public Context Context {
-			get {
-				return Plugin.Context;
-			}
-		}
+		public IrcBotPlugin<T> Plugin { get; protected set; }
 
-		public Trigger(IrcBotPlugin plugin)
+		public Trigger(IrcBotPlugin<T> plugin)
 		{
 			Plugin = plugin;
 		}
 
-		protected object Process(ParameterInfo info, IrcEventArgs args)
+		protected object Process(ParameterInfo info, IrcMessageEventArgs args)
+		{
+			if (info.ParameterType == typeof(IrcMessageEventArgs)) {
+				return args;
+			} else if (info.ParameterType == typeof(Encoding)) {
+				return args.Encoding;
+			} else {
+				string name = info.Name.ToLower();
+				switch (name) {
+				case "nick":
+				case "target":
+					return args.Source.Name;
+				case "message":
+				case "msg":
+				case "text":
+					return args.Text;
+				}
+			}
+			return null;
+		}
+
+		protected object Process(ParameterInfo info, Match match)
+		{
+			if (info.ParameterType == typeof(Match)) {
+				return match;
+			} else {
+				return Process(info, match.Groups);
+			}
+		}
+
+		protected object Process(ParameterInfo info, GroupCollection groups)
+		{
+			if (info.ParameterType == typeof(GroupCollection)) {
+				return groups;
+			} else if (info.ParameterType == typeof(string)) {
+				return groups.Get(info.Name);
+			} else {
+				if (HasTryParse(info.ParameterType)) {
+					string str = groups.Get(info.Name);
+					if (str == null) {
+						return null;
+					} else {
+						object o;
+						if (TryParse(info.ParameterType, str, out o)) {
+							return o;
+						} else {
+							return null;
+						}
+					}
+				}
+				return null;
+			}
+		}
+			/*
+		protected object Process(ParameterInfo info, EventArgs args)
 		{
 			if (info.ParameterType == typeof(IrcEventArgs)) {
 				return args;
@@ -161,40 +210,7 @@ namespace SmartIrcBot4net
 				return Process(info, args.Data);
 			}
 		}
-
-		protected object Process(ParameterInfo info, Match match)
-		{
-			if (info.ParameterType == typeof(Match)) {
-				return match;
-			} else {
-				return Process(info, match.Groups);
-			}
-		}
-
-		protected object Process(ParameterInfo info, GroupCollection groups)
-		{
-			if (info.ParameterType == typeof(GroupCollection)) {
-				return groups;
-			} else if (info.ParameterType == typeof(string)) {
-				return groups.Get(info.Name);
-			} else {
-				if (HasTryParse(info.ParameterType)) {
-					string str = groups.Get(info.Name);
-					if (str == null) {
-						return null;
-					} else {
-						object o;
-						if (TryParse(info.ParameterType, str, out o)) {
-							return o;
-						} else {
-							return null;
-						}
-					}
-
-				}
-				return null;
-			}
-		}
+		*/
 
 		protected object[] GetValues(ParameterInfo[] parameters, Func<ParameterInfo, object> callback)
 		{

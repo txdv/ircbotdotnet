@@ -4,12 +4,12 @@ using System.Runtime.CompilerServices;
 // Information about this assembly is defined by the following attributes. 
 // Change them to the values specific to your project.
 
-[assembly: AssemblyTitle("SmartIrcBot4net")]
+[assembly: AssemblyTitle("IrcBotDotNet")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("bentkus")]
+[assembly: AssemblyCopyright("Andrius Bentkus")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

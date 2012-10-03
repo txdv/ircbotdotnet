@@ -31,10 +31,27 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="LibuvSharp">
+      <HintPath>..\..\libs\LibuvSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="IrcDotNet">
+      <HintPath>..\..\libs\IrcDotNet.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="UVIrcClient.cs" />
+    <Compile Include="Plugins\AdminPlugin.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\IrcBotDotNet\IrcBotDotNet.csproj">
+      <Project>{3DBD415E-3EEE-4DE1-9A1B-E6FC0A269011}</Project>
+      <Name>IrcBotDotNet</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Plugins\" />
+  </ItemGroup>
 </Project>
