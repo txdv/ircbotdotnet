@@ -17,6 +17,11 @@ namespace IrcDotNet.Bot
 
 		public IrcBot<T> Bot { get; internal set; }
 		public T Client { get; internal set; }
+		public IrcLocalUser LocalUser {
+			get {
+				return Client.LocalUser;
+			}
+		}
 
 		public IrcBotPlugin()
 		{

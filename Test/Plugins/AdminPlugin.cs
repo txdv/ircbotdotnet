@@ -48,9 +48,9 @@ namespace Test
 			}
 
 			if (Add(admin)) {
-				Client.LocalUser.SendMessage(target, string.Format("added {0} to admins", admin));
+				LocalUser.SendMessage(target, string.Format("added {0} to admins", admin));
 			} else {
-				Client.LocalUser.SendMessage(target, string.Format("{0} is already an admin", admin));
+				LocalUser.SendMessage(target, string.Format("{0} is already an admin", admin));
 			}
 		}
 
@@ -62,9 +62,9 @@ namespace Test
 			}
 
 			if (Delete(admin)) {
-				Client.LocalUser.SendMessage(target, string.Format("removed {0} from the admin list", admin));
+				LocalUser.SendMessage(target, string.Format("removed {0} from the admin list", admin));
 			} else {
-				Client.LocalUser.SendMessage(target, string.Format("no such admin {0}", admin));
+				LocalUser.SendMessage(target, string.Format("no such admin {0}", admin));
 			}
 		}
 
@@ -75,7 +75,7 @@ namespace Test
 				return;
 			}
 
-			Client.LocalUser.SendMessage(target, admins.Count.ToString());
+			LocalUser.SendMessage(target, admins.Count.ToString());
 		}
 	}
 }
