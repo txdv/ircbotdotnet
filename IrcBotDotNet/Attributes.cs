@@ -89,19 +89,5 @@ namespace IrcDotNet.Bot
 		public TimeSpan Timeout { get; set; }
 		public bool DefaultValue { get; set; }
 	}
-
-	public class OnPartAttribute : IrcBotAttribute
-	{
-		public OnPartAttribute()
-		{
-		}
-
-		public OnPartAttribute(string channel)
-		{
-			Channel = channel;
-		}
-
-		public string Channel { get; set; }
-	}
 }
 

@@ -12,6 +12,7 @@ namespace IrcDotNet.Bot
 		List<PreCommandTrigger<T>> PreCommands { get; set; }
 		List<CommandTrigger<T>>    Commands    { get; set; }
 		List<UserJoinTrigger<T>>   UserJoins   { get; set; }
+		List<UserLeaveTrigger<T>>  UserLeaves  { get; set; }
 
 		public string DefaultPrefix { get; set; }
 
@@ -28,6 +29,7 @@ namespace IrcDotNet.Bot
 			PreCommands = new List<PreCommandTrigger<T>>();
 			Commands    = new List<CommandTrigger<T>>();
 			UserJoins   = new List<UserJoinTrigger<T>>();
+			UserLeaves  = new List<UserLeaveTrigger<T>>();
 		}
 
 		internal void Register()
@@ -45,6 +47,10 @@ namespace IrcDotNet.Bot
 					} else if (attribute is OnUserJoinAttribute) {
 						if (member is MethodInfo) {
 							UserJoins.Add(new UserJoinTrigger<T>(this, member as MethodInfo));
+						}
+					} else if (attribute is OnUserLeaveAttribute) {
+						if (member is MethodInfo) {
+							UserLeaves.Add(new UserLeaveTrigger<T>(this, member as MethodInfo));
 						}
 					} else if (attribute is PreCommandAttribute) {
 						if (member is MethodInfo) {
@@ -100,6 +106,11 @@ namespace IrcDotNet.Bot
 		internal void HandleUserJoined(object sender, IrcChannelUserEventArgs e)
 		{
 			UserJoins.ForEach((join) => join.Handle(e));
+		}
+
+		internal void HandeUserLeft(object sender, IrcChannelUserEventArgs e)
+		{
+			UserLeaves.ForEach((leave) => leave.Handle(e));
 		}
 	}
 }
