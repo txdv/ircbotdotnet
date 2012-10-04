@@ -25,6 +25,7 @@ namespace Test
 
 			bot.Plugin(adminPlugin);
 			bot.Plugin(new Greeter<UVIrcClient>());
+			bot.Plugin(new DatabasePlugin<UVIrcClient>(adminPlugin));
 
 			var stdin = new Poll(0);
 			stdin.Start(PollEvent.Read, (_) => {
