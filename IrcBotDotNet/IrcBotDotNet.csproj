@@ -45,6 +45,7 @@
     <Compile Include="IrcBotPlugin.cs" />
     <Compile Include="Triggers\UserJoin.cs" />
     <Compile Include="Triggers\OnUserLeave.cs" />
+    <Compile Include="Triggers\TriggerProcessing.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

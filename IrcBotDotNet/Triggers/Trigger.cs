@@ -2,15 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
 
 using IrcDotNet;
 using IrcDotNet.Bot.Extensions;
 
 namespace IrcDotNet.Bot
 {
-	class Trigger<T> where T : IrcClient
+	partial class Trigger<T> where T : IrcClient
 	{
 		private static Dictionary<Type, MethodInfo> tryParseMethods = new Dictionary<Type, MethodInfo>();
 
@@ -85,76 +83,6 @@ namespace IrcDotNet.Bot
 		public Trigger(IrcBotPlugin<T> plugin)
 		{
 			Plugin = plugin;
-		}
-
-		protected object Process(ParameterInfo info, IrcMessageEventArgs args)
-		{
-			if (info.ParameterType == typeof(IrcMessageEventArgs)) {
-				return args;
-			} else if (info.ParameterType == typeof(Encoding)) {
-				return args.Encoding;
-			} else {
-				string name = info.Name.ToLower();
-				switch (name) {
-				case "nick":
-				case "target":
-					return args.Source.Name;
-				case "message":
-				case "msg":
-				case "text":
-					return args.Text;
-				}
-			}
-			return null;
-		}
-
-		protected object Process(ParameterInfo info, Match match)
-		{
-			if (info.ParameterType == typeof(Match)) {
-				return match;
-			} else {
-				return Process(info, match.Groups);
-			}
-		}
-
-		protected object Process(ParameterInfo info, GroupCollection groups)
-		{
-			if (info.ParameterType == typeof(GroupCollection)) {
-				return groups;
-			} else if (info.ParameterType == typeof(string)) {
-				return groups.Get(info.Name);
-			} else {
-				if (HasTryParse(info.ParameterType)) {
-					string str = groups.Get(info.Name);
-					if (str == null) {
-						return null;
-					} else {
-						object o;
-						if (TryParse(info.ParameterType, str, out o)) {
-							return o;
-						} else {
-							return null;
-						}
-					}
-				}
-				return null;
-			}
-		}
-
-		protected object Process(ParameterInfo info, IrcChannelUserEventArgs args)
-		{
-			if (info.ParameterType == typeof(IrcChannelUserEventArgs)) {
-				return args;
-			} else if (info.ParameterType == typeof(string)) {
-				switch (info.Name.ToLower()) {
-				case "channel":
-					return args.ChannelUser.Channel.Name;
-				default:
-					return null;
-				}
-			} else {
-				return null;
-			}
 		}
 
 		protected object[] GetValues(ParameterInfo[] parameters, Func<ParameterInfo, object> callback)
