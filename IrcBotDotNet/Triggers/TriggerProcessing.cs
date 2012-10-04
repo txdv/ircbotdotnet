@@ -68,23 +68,78 @@ namespace IrcDotNet.Bot
 				return args;
 			} else if (info.ParameterType == typeof(string)) {
 				switch (info.Name.ToLower()) {
+				case "comment":
+					return args.Comment;
+				}
+			}
+			return Process (info, args.ChannelUser);;
+		}
+
+		protected object Process(ParameterInfo info, IrcChannelUser user)
+		{
+			// TODO: expose user mode?
+
+			if (info.ParameterType == typeof(IrcChannelUser)) {
+				return user;
+			} else {
+				return Process(info, user.Channel) ?? Process(info, user.User);
+			}
+		}
+
+		protected object Process(ParameterInfo info, IrcChannel channel)
+		{
+			// TODO: expose channel mode
+
+			if (info.ParameterType == typeof(IrcChannel)) {
+				return channel;
+			} else if (info.ParameterType == typeof(IrcChannelType)) {
+				return channel.Type;
+			} else if (info.ParameterType == typeof(string)) {
+				switch (info.Name.ToLower()) {
 				case "channel":
-					return args.ChannelUser.Channel.Name;
+				case "chan":
+					return channel.Name;
+				case "topic":
+					return channel.Topic;
+				}
+			}
+			return null;
+		}
+
+		protected object Process(ParameterInfo info, IrcUser user)
+		{
+			if (info.ParameterType == typeof(IrcUser)) {
+				return user;
+			} else if (info.ParameterType == typeof(TimeSpan)) {
+				switch (info.Name.ToLower()) {
+				case "idleduration":
+				case "idle":
+					return user.IdleDuration;
+				}
+			} else if (info.ParameterType == typeof(bool)) {
+				switch (info.Name.ToLower()) {
+				case "isonline":
+				case "online":
+					return user.IsOnline;
+				case "isaway":
+				case "away":
+					return user.IsAway;
+				}
+			} else if (info.ParameterType == typeof(string)) {
+				switch (info.Name.ToLower()) {
 				case "nickname":
 				case "nick":
-				case "name":
-					return args.ChannelUser.User.NickName;
+					return user.NickName;
 				case "realname":
-					return args.ChannelUser.User.RealName;
-				case "hostname":
-				case "host":
-					return args.ChannelUser.User.HostName;
-				default:
-					return null;
+				case "name":
+				case "real":
+					return user.RealName;
+				case "awaymessage":
+				case "awaymsg":
+					return user.AwayMessage;
 				}
-			} else {
-				return null;
 			}
+			return null;
 		}
 	}
 }
