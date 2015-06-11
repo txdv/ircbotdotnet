@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IrcBotDotNet", "IrcBotDotNet\IrcBotDotNet.csproj", "{3DBD415E-3EEE-4DE1-9A1B-E6FC0A269011}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibuvSharp", "..\LibuvSharp\LibuvSharp\LibuvSharp.csproj", "{281B560A-E3B1-437C-9274-DD655E860E6E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,13 +17,16 @@ Global
 		{121752B9-C0CA-48BB-91F0-8900225116A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{121752B9-C0CA-48BB-91F0-8900225116A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{121752B9-C0CA-48BB-91F0-8900225116A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{281B560A-E3B1-437C-9274-DD655E860E6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{281B560A-E3B1-437C-9274-DD655E860E6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{281B560A-E3B1-437C-9274-DD655E860E6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{281B560A-E3B1-437C-9274-DD655E860E6E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3DBD415E-3EEE-4DE1-9A1B-E6FC0A269011}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3DBD415E-3EEE-4DE1-9A1B-E6FC0A269011}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DBD415E-3EEE-4DE1-9A1B-E6FC0A269011}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3DBD415E-3EEE-4DE1-9A1B-E6FC0A269011}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Test\Test.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
 		$1.FileWidth = 120
@@ -37,8 +42,18 @@ Global
 		$3.inheritsSet = null
 		$3.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $4
+		$4.BeforeMethodDeclarationParentheses = False
+		$4.BeforeMethodCallParentheses = False
+		$4.BeforeConstructorDeclarationParentheses = False
+		$4.BeforeIndexerDeclarationBracket = False
+		$4.BeforeDelegateDeclarationParentheses = False
+		$4.NewParentheses = False
+		$4.SpacesBeforeBrackets = False
 		$4.inheritsSet = Mono
 		$4.inheritsScope = text/x-csharp
 		$4.scope = text/x-csharp
+		$0.DotNetNamingPolicy = $5
+		$5.DirectoryNamespaceAssociation = None
+		$5.ResourceNamePolicy = FileFormatDefault
 	EndGlobalSection
 EndGlobal

@@ -19,16 +19,18 @@ namespace Test
 				RealName = "txdv bot",
 			});
 
-			bot.Client.Connected += (_, __) => client.Channels.Join("#help");
-
 			var adminPlugin = new AdminPlugin<UVIrcClient>("bentkus");
 
 			bot.Plugin(adminPlugin);
 			bot.Plugin(new Greeter<UVIrcClient>());
 			bot.Plugin(new DatabasePlugin<UVIrcClient>(adminPlugin));
 
+			UVTimer.Once(TimeSpan.FromSeconds (1), () => client.Channels.Join("#help"));
+
 			var stdin = new Poll(0);
-			stdin.Start(PollEvent.Read, (_) => {
+			stdin.Start(PollEvent.Read);
+
+			stdin.Event += (_) => {
 				var line = Console.ReadLine();
 				switch (line) {
 				case "quit":
@@ -38,7 +40,7 @@ namespace Test
 				default:
 					break;
 				}
-			});
+			};
 
 			Loop.Default.Run();
 		}

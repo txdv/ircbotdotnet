@@ -10,15 +10,16 @@ namespace Test
 		public Loop Loop { get; private set; }
 		Tcp Client { get; set; }
 
+		bool isConnected = false;
+		public override bool IsConnected {
+			get {
+				return isConnected;
+			}
+		}
+
 		public UVIrcClient()
 			: this(Loop.Default)
 		{
-		}
-
-		public override bool IsConnected {
-			get {
-				return true;
-			}
 		}
 
 		public UVIrcClient(Loop loop)
@@ -36,20 +37,21 @@ namespace Test
 			}
 
 			Client.Connect(ipAddress, DefaultPort, (e) => {
+				isConnected = true;
 				HandleClientConnected(registrationInfo);
-				Client.Read(OnRead);
+				Client.Data += OnRead;
 				Client.Resume();
 			});
 
 			HandleClientConnecting();
 		}
 
-		private void OnRead(ByteBuffer buffer)
+		private void OnRead(ArraySegment<byte> buffer)
 		{
-			int start = buffer.Start;
-			for (int i = buffer.Start; i + 1 < buffer.End; i++) {
-				if (buffer.Buffer[i] == 13 && buffer.Buffer[i + 1] == 10) {
-					ParseMessage(TextEncoding.GetString(buffer.Buffer, start, i - start));
+			int start = buffer.Offset;
+			for (int i = buffer.Offset; i + 1 < buffer.Count; i++) {
+				if (buffer.Array[i] == 13 && buffer.Array[i + 1] == 10) {
+					ParseMessage(TextEncoding.GetString(buffer.Array, start, i - start));
 					i += 2;
 					start = i;
 				}

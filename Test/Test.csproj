@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{121752B9-C0CA-48BB-91F0-8900225116A6}</ProjectGuid>
     <OutputType>Exe</OutputType>
@@ -31,11 +31,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="LibuvSharp">
-      <HintPath>..\..\libs\LibuvSharp.dll</HintPath>
-    </Reference>
     <Reference Include="IrcDotNet">
-      <HintPath>..\..\libs\IrcDotNet.dll</HintPath>
+      <HintPath>..\packages\IrcDotNet.0.5.0\lib\net40\IrcDotNet.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -52,8 +49,15 @@
       <Project>{3DBD415E-3EEE-4DE1-9A1B-E6FC0A269011}</Project>
       <Name>IrcBotDotNet</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\LibuvSharp\LibuvSharp\LibuvSharp.csproj">
+      <Project>{281B560A-E3B1-437C-9274-DD655E860E6E}</Project>
+      <Name>LibuvSharp</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Plugins\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

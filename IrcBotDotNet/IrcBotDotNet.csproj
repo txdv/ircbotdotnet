@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{3DBD415E-3EEE-4DE1-9A1B-E6FC0A269011}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -32,7 +32,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="IrcDotNet">
-      <HintPath>..\..\libs\IrcDotNet.dll</HintPath>
+      <HintPath>..\packages\IrcDotNet.0.5.0\lib\net40\IrcDotNet.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -50,5 +50,8 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Triggers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
