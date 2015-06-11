@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using IrcDotNet;
 using IrcDotNet.Bot;
 using LibuvSharp;
@@ -30,13 +31,33 @@ namespace Test
 
 		public void Connect(string ipAddress, IrcUserRegistrationInfo registrationInfo)
 		{
+			Connect(IPAddress.Parse(ipAddress), registrationInfo);
+		}
+
+		public void Connect(string ipAddress, int port, IrcUserRegistrationInfo registrationInfo)
+		{
+			Connect(IPAddress.Parse(ipAddress), port, registrationInfo);
+		}
+
+		public void Connect(IPAddress ipAddress, IrcUserRegistrationInfo registrationInfo)
+		{
+			Connect(ipAddress, DefaultPort, registrationInfo);
+		}
+
+		public void Connect(IPAddress ipAddress, int port, IrcUserRegistrationInfo registrationInfo)
+		{
+			Connect(new IPEndPoint(ipAddress, port), registrationInfo);
+		}
+
+		public void Connect(IPEndPoint ipEndPoint, IrcUserRegistrationInfo registrationInfo)
+		{
 			Connect(registrationInfo);
 
 			if (Client == null) {
 				Client = new Tcp(Loop);
 			}
 
-			Client.Connect(ipAddress, DefaultPort, (e) => {
+			Client.Connect(ipEndPoint, (ex) => {
 				isConnected = true;
 				HandleClientConnected(registrationInfo);
 				Client.Data += OnRead;
