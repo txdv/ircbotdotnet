@@ -9,10 +9,10 @@ namespace IrcDotNet.Bot
 {
 	public abstract class IrcBotPlugin<T> where T : IrcClient
 	{
-		List<PreCommandTrigger<T>> PreCommands { get; set; }
-		List<CommandTrigger<T>>    Commands    { get; set; }
-		List<UserJoinTrigger<T>>   UserJoins   { get; set; }
-		List<UserLeaveTrigger<T>>  UserLeaves  { get; set; }
+		List<PreCommandTrigger<T>> PreCommands { get; set; } = new List<PreCommandTrigger<T>>();
+		List<CommandTrigger<T>>    Commands    { get; set; } = new List<CommandTrigger<T>>();
+		List<UserJoinTrigger<T>>   UserJoins   { get; set; } = new List<UserJoinTrigger<T>>();
+		List<UserLeaveTrigger<T>>  UserLeaves  { get; set; } = new List<UserLeaveTrigger<T>>();
 
 		public string DefaultPrefix { get; set; }
 
@@ -22,14 +22,6 @@ namespace IrcDotNet.Bot
 			get {
 				return Client.LocalUser;
 			}
-		}
-
-		public IrcBotPlugin()
-		{
-			PreCommands = new List<PreCommandTrigger<T>>();
-			Commands    = new List<CommandTrigger<T>>();
-			UserJoins   = new List<UserJoinTrigger<T>>();
-			UserLeaves  = new List<UserLeaveTrigger<T>>();
 		}
 
 		internal void Register()
