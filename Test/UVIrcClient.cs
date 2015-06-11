@@ -60,7 +60,7 @@ namespace Test
 
 		protected override void WriteMessage(string line, object token)
 		{
-			Client.Write(TextEncoding, line + Environment.NewLine, (_) => {
+			Client.Write(TextEncoding, line + Environment.NewLine, (ex) => {
 				OnRawMessageSent(token as IrcRawMessageEventArgs);
 			});
 		}

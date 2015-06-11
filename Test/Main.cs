@@ -25,7 +25,7 @@ namespace Test
 			bot.Plugin(new Greeter<UVIrcClient>());
 			bot.Plugin(new DatabasePlugin<UVIrcClient>(adminPlugin));
 
-			UVTimer.Once(TimeSpan.FromSeconds (1), () => client.Channels.Join("#help"));
+			UVTimer.Once(TimeSpan.FromSeconds(1), () => client.Channels.Join("#help"));
 
 			var stdin = new Poll(0);
 			stdin.Start(PollEvent.Read);

@@ -45,17 +45,17 @@ namespace IrcDotNet.Bot
 
 		void HandleUserJoined(object sender, IrcChannelUserEventArgs e)
 		{
-			Each((plugin) => plugin.HandleUserJoined(sender, e));
+			Each(plugin => plugin.HandleUserJoined(sender, e));
 		}
 
 		void HandleUserLeft(object sender, IrcChannelUserEventArgs e)
 		{
-			Each((plugin) => plugin.HandeUserLeft(sender, e));
+			Each(plugin => plugin.HandeUserLeft(sender, e));
 		}
 
 		void HandleMessageReceived(object sender, IrcMessageEventArgs e)
 		{
-			Each((plugin) => plugin.HandleMessageReceived(sender, e));
+			Each(plugin => plugin.HandleMessageReceived(sender, e));
 		}
 
 		void Each(Action<IrcBotPlugin<T>> callback)

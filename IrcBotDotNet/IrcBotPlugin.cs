@@ -88,7 +88,7 @@ namespace IrcDotNet.Bot
 			}
 
 			for (int i = 0; i < PreCommands.Count; i++) {
-				PreCommands[i].Handle(type, args, delegate (bool value) {
+				PreCommands[i].Handle(type, args, (value) => {
 
 					if (!value) {
 						allTrue = false;
@@ -105,12 +105,12 @@ namespace IrcDotNet.Bot
 
 		internal void HandleUserJoined(object sender, IrcChannelUserEventArgs e)
 		{
-			UserJoins.ForEach((join) => join.Handle(e));
+			UserJoins.ForEach(join => join.Handle(e));
 		}
 
 		internal void HandeUserLeft(object sender, IrcChannelUserEventArgs e)
 		{
-			UserLeaves.ForEach((leave) => leave.Handle(e));
+			UserLeaves.ForEach(leave => leave.Handle(e));
 		}
 	}
 }
