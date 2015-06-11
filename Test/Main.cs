@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 using IrcDotNet;
 using IrcDotNet.Bot;
@@ -27,20 +28,18 @@ namespace Test
 
 			UVTimer.Once(TimeSpan.FromSeconds(1), () => client.Channels.Join("#help"));
 
-			var stdin = new Poll(0);
-			stdin.Start(PollEvent.Read);
-
-			stdin.Event += (_) => {
-				var line = Console.ReadLine();
+			var stdin = new TTY(0);
+			stdin.Read(Encoding.Default, (line) => {
+				line = line.Trim();
 				switch (line) {
 				case "quit":
-					client.Close();
-					stdin.Close();
+					Loop.Default.Stop();
 					break;
 				default:
 					break;
 				}
-			};
+			});
+			stdin.Resume();
 
 			Loop.Default.Run();
 		}
