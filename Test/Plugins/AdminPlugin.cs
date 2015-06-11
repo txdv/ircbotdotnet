@@ -41,30 +41,30 @@ namespace Test
 		}
 
 		[OnCommand("admin add (?<admin>(.+))")]
-		public void AdminAdd(string destination, string nick, string admin)
+		public void AdminAdd(string nick, string admin)
 		{
 			if (!IsAdmin(nick)) {
 				return;
 			}
 
 			if (Add(admin)) {
-				LocalUser.SendMessage(destination, string.Format("added {0} to admins", admin));
+				Reply("added {0} to admins", admin);
 			} else {
-				LocalUser.SendMessage(destination, string.Format("{0} is already an admin", admin));
+				Reply("{0} is already an admin", admin);
 			}
 		}
 
 		[OnCommand("admin del (?<admin>(.+))")]
-		public void AdminDel(string destination, string nick, string admin)
+		public void AdminDel(string nick, string admin)
 		{
 			if (!IsAdmin(nick)) {
 				return;
 			}
 
 			if (Delete(admin)) {
-				LocalUser.SendMessage(destination, string.Format("removed {0} from the admin list", admin));
+				Reply("removed {0} from the admin list", admin);
 			} else {
-				LocalUser.SendMessage(destination, string.Format("no such admin {0}", admin));
+				Reply("no such admin {0}", admin);
 			}
 		}
 

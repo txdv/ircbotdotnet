@@ -10,8 +10,7 @@ namespace Test
 		[OnUserJoin]
 		public void Greet(IrcChannelUserEventArgs args)
 		{
-			LocalUser.SendMessage(args.ChannelUser.Channel.Name,
-			                      string.Format("Hello {0}", args.ChannelUser.User.NickName));
+			Reply("Hello {0}", args.ChannelUser.User.NickName);
 		}
 	}}
 

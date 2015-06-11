@@ -1,9 +1,11 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 
 using IrcDotNet;
 using IrcDotNet.Bot;
+using IrcDotNet.Bot.Extensions;
 
 namespace IrcDotNet.Bot
 {
@@ -22,6 +24,16 @@ namespace IrcDotNet.Bot
 			get {
 				return Client.LocalUser;
 			}
+		}
+
+		protected string destination;
+		protected bool Reply(string text, params string[] values)
+		{
+			if (!string.IsNullOrEmpty(destination)) {
+				LocalUser.SendMessage(destination, string.Format(text, values));
+				return true;
+			}
+			return false;
 		}
 
 		internal void Register()
@@ -66,7 +78,9 @@ namespace IrcDotNet.Bot
 
 		internal void HandleMessageReceived(object sender, IrcMessageEventArgs e)
 		{
+			destination = e.GetDestination();
 			HandleMessageReceived(MessageType.Query, sender, e);
+			destination = null;
 		}
 
 		void HandleMessageReceived(MessageType type, object sender, IrcMessageEventArgs args)
@@ -97,12 +111,16 @@ namespace IrcDotNet.Bot
 
 		internal void HandleUserJoined(object sender, IrcChannelUserEventArgs e)
 		{
+			destination = e.GetDestination();
 			UserJoins.ForEach(join => join.Handle(e));
+			destination = null;
 		}
 
 		internal void HandeUserLeft(object sender, IrcChannelUserEventArgs e)
 		{
+			destination = e.GetDestination();
 			UserLeaves.ForEach(leave => leave.Handle(e));
+			destination = null;
 		}
 	}
 }

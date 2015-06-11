@@ -63,12 +63,7 @@ namespace IrcDotNet.Bot
 				switch (info.Name.ToLower()) {
 				case "destination":
 				case "dest":
-					if (target is IrcUser) {
-						return args.Source.Name;
-					} else if (target is IrcChannel) {
-						return target.Name;
-					}
-					break;
+					return args.GetDestination();
 				case "target":
 					return target.Name;
 				case "nick":
