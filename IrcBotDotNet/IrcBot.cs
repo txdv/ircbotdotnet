@@ -35,12 +35,16 @@ namespace IrcDotNet.Bot
 		{
 			e.Channel.UserJoined += HandleUserJoined;
 			e.Channel.UserLeft += HandleUserLeft;
+
+			e.Channel.MessageReceived += HandleMessageReceived;
 		}
 
 		void HandleLeftChannel(object sender, IrcChannelEventArgs e)
 		{
 			e.Channel.UserJoined -= HandleUserJoined;
 			e.Channel.UserLeft -= HandleUserLeft;
+
+			e.Channel.MessageReceived -= HandleMessageReceived;
 		}
 
 		void HandleUserJoined(object sender, IrcChannelUserEventArgs e)

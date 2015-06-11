@@ -29,9 +29,9 @@ namespace Test
 		public bool On { get; set; }
 
 		[OnCommand("db$")]
-		public void Check(string target)
+		public void Check(string destination)
 		{
-			LocalUser.SendMessage(target, "service is " + (On ? "on" : "off"));
+			LocalUser.SendMessage(destination, "service is " + (On ? "on" : "off"));
 		}
 
 		[OnCommand(@"db set (?<key>(\w+)) (?<value>(.+))")]
@@ -41,24 +41,24 @@ namespace Test
 		}
 
 		[OnCommand(@"db get (?<key>(\w+))")]
-		public void Get(string target, string key)
+		public void Get(string destination, string key)
 		{
 			string val;
 			if (!db.TryGetValue(key, out val)) {
-				LocalUser.SendMessage(target, "no such key");
+				LocalUser.SendMessage(destination, "no such key");
 			} else {
-				LocalUser.SendMessage(target, string.Format("{0}:{1}", key, db[key]));
+				LocalUser.SendMessage(destination, string.Format("{0}:{1}", key, db[key]));
 			}
 		}
 
 		[OnCommand(@"db (remove|rm|del|delete) (?<key>(\w+))")]
-		public void Delete(string target, string key)
+		public void Delete(string destination, string key)
 		{
 			if (db.ContainsKey(key)) {
-				LocalUser.SendMessage(target, "deleted key " + key);
+				LocalUser.SendMessage(destination, "deleted key " + key);
 				db.Remove(key);
 			} else {
-				LocalUser.SendMessage(target, "no such key");
+				LocalUser.SendMessage(destination, "no such key");
 			}
 		}
 	}

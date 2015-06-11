@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 using IrcDotNet.Bot.Extensions;
 
@@ -48,10 +50,29 @@ namespace IrcDotNet.Bot
 				return args;
 			} else if (info.ParameterType == typeof(Encoding)) {
 				return args.Encoding;
-			} else {
+			} else if (info.ParameterType == typeof(IIrcMessageSource)) {
+				return args.Source;
+			} else if (info.ParameterType == typeof(IIrcMessageTarget)) {
+				return args.Targets.First();
+			} else if (info.ParameterType == typeof(IList<IIrcMessageTarget>)) {
+				return args.Targets;
+			} else if (info.ParameterType == typeof(IEnumerable<IIrcMessageTarget>)) {
+				return args.Targets;
+			} else if (info.ParameterType == typeof(string)) {
+				var target = args.Targets.First();
 				switch (info.Name.ToLower()) {
-				case "nick":
+				case "destination":
+				case "dest":
+					if (target is IrcUser) {
+						return args.Source.Name;
+					} else if (target is IrcChannel) {
+						return target.Name;
+					}
+					break;
 				case "target":
+					return target.Name;
+				case "nick":
+				case "source":
 					return args.Source.Name;
 				case "message":
 				case "msg":

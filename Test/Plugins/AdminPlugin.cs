@@ -41,41 +41,41 @@ namespace Test
 		}
 
 		[OnCommand("admin add (?<admin>(.+))")]
-		public void AdminAdd(string target, string nick, string admin)
+		public void AdminAdd(string destination, string nick, string admin)
 		{
 			if (!IsAdmin(nick)) {
 				return;
 			}
 
 			if (Add(admin)) {
-				LocalUser.SendMessage(target, string.Format("added {0} to admins", admin));
+				LocalUser.SendMessage(destination, string.Format("added {0} to admins", admin));
 			} else {
-				LocalUser.SendMessage(target, string.Format("{0} is already an admin", admin));
+				LocalUser.SendMessage(destination, string.Format("{0} is already an admin", admin));
 			}
 		}
 
 		[OnCommand("admin del (?<admin>(.+))")]
-		public void AdminDel(string target, string nick, string admin)
+		public void AdminDel(string destination, string nick, string admin)
 		{
 			if (!IsAdmin(nick)) {
 				return;
 			}
 
 			if (Delete(admin)) {
-				LocalUser.SendMessage(target, string.Format("removed {0} from the admin list", admin));
+				LocalUser.SendMessage(destination, string.Format("removed {0} from the admin list", admin));
 			} else {
-				LocalUser.SendMessage(target, string.Format("no such admin {0}", admin));
+				LocalUser.SendMessage(destination, string.Format("no such admin {0}", admin));
 			}
 		}
 
 		[OnCommand("admin list$")]
-		public void AdminList(string target, string nick)
+		public void AdminList(string destination, string nick)
 		{
 			if (!IsAdmin(nick)) {
 				return;
 			}
 
-			LocalUser.SendMessage(target, admins.Count.ToString());
+			LocalUser.SendMessage(destination, admins.Count.ToString());
 		}
 	}
 }
