@@ -43,6 +43,7 @@
     <Compile Include="Plugins\AdminPlugin.cs" />
     <Compile Include="Plugins\Greeter.cs" />
     <Compile Include="Plugins\DatabasePlugin.cs" />
+    <Compile Include="Plugins\JoinPlugin.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

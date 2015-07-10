@@ -25,6 +25,7 @@ namespace Test
 			bot.Plugin(adminPlugin);
 			bot.Plugin(new Greeter<UVIrcClient>());
 			bot.Plugin(new DatabasePlugin<UVIrcClient>(adminPlugin));
+			bot.Plugin(new JoinPlugin<UVIrcClient>(adminPlugin));
 
 			UVTimer.Once(TimeSpan.FromSeconds(1), () => client.Channels.Join("#help"));
 
